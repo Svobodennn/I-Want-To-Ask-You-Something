@@ -27,3 +27,24 @@ python3 -m http.server 8000    # sonra http://localhost:8000
 - `PLAN.md` — tasarım & teknik sözleşme (tek doğruluk kaynağı)
 
 Framework yok, bağımlılık yok, build yok. Saf HTML/CSS/JS.
+
+## Canlı bildirim (randevu oluşunca)
+
+Özet ekranına ulaşılınca `js/config.js` içindeki `CONFIG.notify` ayarlarına göre bildirim gönderilir (backend yok, tarayıcıdan doğrudan):
+
+- **ntfy.sh (telefon push):** [ntfy](https://ntfy.sh) uygulamasını kur, `ntfyTopic` değerindeki topic'e abone ol. Randevu oluşunca anında push düşer.
+- **Web3Forms (e-posta):** [web3forms.com](https://web3forms.com)'dan ücretsiz access key al, `web3formsKey` alanına yapıştır. Boşsa e-posta atlanır.
+
+Boş bırakılan kanal otomatik atlanır; her ikisi de opsiyoneldir.
+
+## Yayınlama (paylaşmak için)
+
+Statik site — herhangi bir statik host'a konur:
+
+```bash
+npx vercel            # Vercel (bir kez login) → https://...vercel.app
+# veya app.netlify.com/drop adresine klasörü sürükle-bırak (hesapsız)
+```
+
+Deploy edilen linki paylaş; karşı taraf tamamlayınca bildirim gelir.
+

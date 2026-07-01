@@ -7,6 +7,7 @@
   var state = { day: null, food: null, drink: null };
 
   var toastTimer = null;
+  var notified = false;         // randevu bildirimi bir kez gitsin (restart'ta sıfırlanır)
 
   /* --- yardımcılar --- */
 
@@ -86,6 +87,7 @@
       if (window.Celebrate && typeof Celebrate.rain === "function") {
         Celebrate.rain();
       }
+      if (!notified) { notified = true; sendNotifications(); }
     }
   }
 
@@ -319,6 +321,43 @@
     if (dr) dr.textContent = state.drink != null ? state.drink : "";
   }
 
+  /* --- Canlı bildirim: randevu oluşunca (özet ekranı) sana haber uçur --- */
+  function sendNotifications() {
+    var cfg = (window.CONFIG && CONFIG.notify) || {};
+    var who = cfg.toName ? (cfg.toName + " ") : "";
+    var title = "💌 Randevu oluştu!";
+    var detail = who + "randevuyu onayladı 🎉\n" +
+      "📅 " + (state.day || "-") + "\n" +
+      "🍽️ " + (state.food || "-") + "\n" +
+      "🥂 " + (state.drink || "-");
+
+    // 1) ntfy.sh → anında telefon push (basit POST, custom header yok → CORS preflight yok)
+    if (cfg.ntfyTopic) {
+      try {
+        fetch("https://ntfy.sh/" + encodeURIComponent(cfg.ntfyTopic), {
+          method: "POST",
+          body: title + "\n" + detail
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    // 2) Web3Forms → e-posta (access key public-safe; e-posta adresini gizler)
+    if (cfg.web3formsKey) {
+      try {
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            access_key: cfg.web3formsKey,
+            subject: title,
+            from_name: "Randevu Sitesi 💌",
+            message: detail + "\n\nSeninle, çok yakında ♡"
+          })
+        }).catch(function () {});
+      } catch (e) {}
+    }
+  }
+
   /* --- Bilet indirme (özet kartını PNG olarak; offline, kütüphane YOK) --- */
 
   function roundRect(g, x, y, w, h, r) {
@@ -454,6 +493,7 @@
     state.day = null;
     state.food = null;
     state.drink = null;
+    notified = false;
 
     resetAllChips();
     resetLabels();

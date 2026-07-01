@@ -30,12 +30,26 @@
       "Seninle, çok yakında ♡";
   }
 
+  /* ---------------------------------------------------------------------------
+     CANLI BİLDİRİM — randevu oluşunca (özet ekranı) senin tarayıcına haber uçar.
+     Backend yok; onun tarayıcısı doğrudan ücretsiz servislere POST atar.
+       • ntfy.sh   → telefonuna anında PUSH (ntfy uygulamasını kur, aşağıdaki topic'e abone ol)
+       • Web3Forms → e-posta (web3forms.com'dan ücretsiz access key al, adresini gizler)
+     Boş bırakılan kanal otomatik atlanır (sadece dolu olan(lar) çalışır).
+     --------------------------------------------------------------------------- */
+  var NOTIFY = {
+    toName: "Aslı",                          // mesajda görünür (kime soruldu)
+    ntfyTopic: "randevu-asli-8fk2p7q",       // ntfy.sh topic — TELEFONDA BUNA ABONE OL (istersen değiştir)
+    web3formsKey: ""                          // web3forms.com access key (boşsa e-posta atlanır)
+  };
+
   window.CONFIG = {
     messages: messages,
     // Tüm nudge mesajları gösterildikten sonra teslim ol (mesaj sayısına otomatik bağlı).
     surrenderAt: messages.length - 1,
     surrenderText: "Peki... Evet o zaman :)",
     reduced: reduced,
-    share: share
+    share: share,
+    notify: NOTIFY
   };
 })();

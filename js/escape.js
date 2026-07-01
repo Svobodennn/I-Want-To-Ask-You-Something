@@ -5,11 +5,12 @@
   "use strict";
 
   // --- Ayarlanabilir eşikler (PLAN §5) ---
-  var TRIGGER_DIST = 120;   // imleç↔buton merkezi < ~120px → kaç (masaüstü)
+  var TRIGGER_MARGIN = 34;  // imleç butonun KENARINA bu kadar yaklaşınca kaç (row'u değil butonu hedefler)
+  var FLEE_COOLDOWN = 260;  // iki kaçış arası min süre (ms) — mesajlar bir anda tükenmesin
   var FLEE_MIN_DIST = 150;  // yeni konum fareden > 150px uzak
   var EDGE_PAD = 12;        // viewport kenar payı (clamp)
   var YES_SCALE_STEP = 1.06, YES_SCALE_MAX = 1.6;
-  var NO_SCALE_STEP = 0.92, NO_SCALE_MIN = 0.55;
+  var NO_SCALE_STEP = 0.97, NO_SCALE_MIN = 0.7;  // daha az küçülsün (surrender ~10 kaçış)
   var SPRING = "transform 180ms cubic-bezier(.34,1.56,.64,1), left 180ms cubic-bezier(.34,1.56,.64,1), top 180ms cubic-bezier(.34,1.56,.64,1), opacity 180ms ease";
   var SHINE_MS = 700;
   var WOBBLE_MS = 500;
@@ -23,6 +24,7 @@
   var origParent = null;        // orijinal ebeveyn (.btn-row)
   var placeholder = null;       // reset'te aynı konuma geri koymak için
   var lastMouse = { x: -9999, y: -9999 };
+  var lastFleeAt = 0;           // son kaçış zaman damgası (cooldown)
   var yesScale = 1, noScale = 1;
   var shineTimer = null, wobbleTimer = null;
   var listening = false;
@@ -57,6 +59,17 @@
 
   function vw() { return window.innerWidth || document.documentElement.clientWidth; }
   function vh() { return window.innerHeight || document.documentElement.clientHeight; }
+  function now() { return (window.performance && performance.now) ? performance.now() : Date.now(); }
+
+  // İmlecin butonun KENARINA olan mesafesi (buton içindeyse 0). Merkez-yarıçap yerine bunu
+  // kullanmak, tetikleme alanını butona sarar; row'un tamamını kapsamaz.
+  function edgeDist(px, py) {
+    if (!btnNo) return Infinity;
+    var r = btnNo.getBoundingClientRect();
+    var dx = Math.max(r.left - px, 0, px - r.right);
+    var dy = Math.max(r.top - py, 0, py - r.bottom);
+    return Math.hypot(dx, dy);
+  }
 
   // #btn-no'yu ilk kaçışta document.body'ye taşı, fixed konumlandırmaya hazırla.
   function ensureReparented() {
@@ -171,6 +184,7 @@
   // Tek kaçış adımı
   function flee(fromX, fromY) {
     if (surrendered || !btnNo) return;
+    lastFleeAt = now();
     ensureReparented();
 
     var pos = pickNewPosition(fromX, fromY);
@@ -185,8 +199,8 @@
     noScale = Math.max(NO_SCALE_MIN, noScale * NO_SCALE_STEP);
     applyScales();
 
-    // Opaklık düşür (min ~0.45)
-    var op = Math.max(0.45, 1 - escapeCount * 0.08);
+    // Opaklık hafifçe düşür (okunur kalsın)
+    var op = Math.max(0.72, 1 - escapeCount * 0.03);
     btnNo.style.opacity = String(op);
 
     showNudge();
@@ -204,9 +218,12 @@
     if (e.pointerType === "touch") return;
     lastMouse.x = e.clientX;
     lastMouse.y = e.clientY;
-    var c = centerOf(btnNo);
-    var d = Math.hypot(e.clientX - c.x, e.clientY - c.y);
-    if (d < TRIGGER_DIST) {
+    // Evet'in üstündeyken Hayır kaçmasın — Evet daima rahatça tıklanabilir kalsın.
+    if (btnYes && (e.target === btnYes || (btnYes.contains && btnYes.contains(e.target)))) return;
+    // Cooldown: çok hızlı ard arda kaçmasın (mesajlar bir anda tükenmesin, buton mouse'tan kaçabilsin).
+    if (now() - lastFleeAt < FLEE_COOLDOWN) return;
+    // Butonun KENARINA yaklaşınca kaç (row'un tamamını değil).
+    if (edgeDist(e.clientX, e.clientY) < TRIGGER_MARGIN) {
       flee(e.clientX, e.clientY);
     }
   }
@@ -219,11 +236,12 @@
       // SADECE Hayır'a (ya da çok yakınına) dokunulunca kaç.
       // Aksi halde ekranın başka yerine (örn. Evet'e) yapılan dokunuşu preventDefault ile bloklamayalım.
       var onNo = (e.target === btnNo) || (btnNo.contains && btnNo.contains(e.target));
-      var c = centerOf(btnNo);
-      var near = Math.hypot((e.clientX || 0) - c.x, (e.clientY || 0) - c.y) < TRIGGER_DIST;
+      var near = edgeDist(e.clientX || 0, e.clientY || 0) < TRIGGER_MARGIN;
       if (!onNo && !near) return;
-      // preventDefault → tık/synthetic click tescil olmaz
+      // preventDefault → tık/synthetic click tescil olmaz (buton her koşulda yakalanmasın)
       if (typeof e.preventDefault === "function") e.preventDefault();
+      // Cooldown içindeyse tık yine bloklanır ama tekrar kaçış saymayalım.
+      if (now() - lastFleeAt < FLEE_COOLDOWN) return;
       flee(e.clientX, e.clientY);
     }
   }
@@ -352,6 +370,7 @@
       surrendered = false;
       yesScale = 1;
       noScale = 1;
+      lastFleeAt = 0;
       lastMouse.x = -9999;
       lastMouse.y = -9999;
 

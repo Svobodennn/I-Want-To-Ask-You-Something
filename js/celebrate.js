@@ -11,6 +11,8 @@
   var CREAM = '#FBF3EC';
   var ROSE = '#C9718B';
   var PEACH = '#F4B9A6';
+  // Kutlama emojileri (Evet coşkusu)
+  var EMOJIS = ['🎉', '🎊', '💖', '✨', '🥳', '💕'];
 
   // ---- reduced-motion (CONFIG öncelikli, yoksa matchMedia fallback) ----
   function isReduced() {
@@ -26,7 +28,7 @@
     }
   }
 
-  var MAX_PARTICLES = 200;
+  var MAX_PARTICLES = 360;
 
   // ---- Canvas state ----
   var canvas = null;
@@ -110,6 +112,26 @@
     };
   }
 
+  // Kutlama emojisi: fillText ile çizilir (🎉🎊💖✨🥳💕), döner + süzülür.
+  function makeEmoji(x, y, opts) {
+    var reduced = opts.reduced;
+    var ang = rand(0, Math.PI * 2);
+    var speed = reduced ? rand(0.5, 1.6) : rand(2.5, 7.5);
+    return {
+      kind: 'emoji',
+      x: x, y: y,
+      vx: Math.cos(ang) * speed,
+      vy: Math.sin(ang) * speed - (reduced ? rand(0.6, 1.6) : rand(3.5, 8)),
+      size: rand(20, 34),
+      rot: rand(-0.5, 0.5),
+      vr: reduced ? rand(-0.02, 0.02) : rand(-0.12, 0.12),
+      char: pick(EMOJIS),
+      color: CREAM, // emoji için kullanılmaz
+      life: 1,
+      decay: reduced ? rand(0.010, 0.018) : rand(0.007, 0.014)
+    };
+  }
+
   // Üstten düşen kalp (rain): aşağı doğru başlar, hafif yanal.
   function makeRainHeart(opts) {
     var reduced = opts.reduced;
@@ -186,6 +208,11 @@
     ctx.fillStyle = p.color;
     if (p.kind === 'heart') {
       drawHeart(p.size);
+    } else if (p.kind === 'emoji') {
+      ctx.font = p.size + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.char, 0, 0);
     } else {
       // scaleX flip — şeridin dönüp yassılması
       var sx = Math.cos(p.flip);
@@ -242,16 +269,19 @@
           ? makeHeart(x, y, { reduced: true })
           : makeConfetti(x, y, { reduced: true }));
       }
+      for (var e = 0; e < 4; e++) list.push(makeEmoji(x, y, { reduced: true }));
       addParticles(list);
       return;
     }
 
-    var hearts = wantHearts ? Math.round(count * 0.55) : 0;
-    var confetti = count - hearts;
+    var emo = Math.max(3, Math.round(count * 0.16));
+    var hearts = wantHearts ? Math.round(count * 0.46) : 0;
+    var confetti = Math.max(0, count - hearts - emo);
     var out = [];
     var i;
     for (i = 0; i < hearts; i++) out.push(makeHeart(x, y, { reduced: false }));
     for (i = 0; i < confetti; i++) out.push(makeConfetti(x, y, { reduced: false }));
+    for (i = 0; i < emo; i++) out.push(makeEmoji(x, y, { reduced: false }));
     addParticles(out);
   }
 
@@ -261,14 +291,15 @@
     var w = viewW(), h = viewH();
     pulse();
     if (isReduced()) {
-      burst(w / 2, h * 0.4, 20, { hearts: true });
+      burst(w / 2, h * 0.4, 26, { hearts: true });
       return;
     }
-    // Merkez-üst fıskiye
-    burst(w / 2, h * 0.28, 70, { hearts: true });
-    // İki yan popper — biraz gecikmeli
-    setTimeout(function () { burst(w * 0.14, h * 0.5, 40, { hearts: true }); }, 140);
-    setTimeout(function () { burst(w * 0.86, h * 0.5, 40, { hearts: true }); }, 260);
+    // ÇOK COŞKULU: büyük merkez fıskiye + iki yan popper + sürdürülen ikinci/üçüncü dalga
+    burst(w / 2, h * 0.30, 130, { hearts: true });
+    setTimeout(function () { burst(w * 0.12, h * 0.52, 70, { hearts: true }); pulse(); }, 120);
+    setTimeout(function () { burst(w * 0.88, h * 0.52, 70, { hearts: true }); }, 240);
+    setTimeout(function () { burst(w * 0.5, h * 0.24, 100, { hearts: true }); }, 470);
+    setTimeout(function () { burst(w * 0.30, h * 0.60, 55, { hearts: true }); burst(w * 0.70, h * 0.60, 55, { hearts: true }); pulse(); }, 740);
   }
 
   // mini(x,y) — küçük burst (buton tık / kopyalama ödülü).

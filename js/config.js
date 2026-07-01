@@ -10,10 +10,9 @@
     "Cidden mi ya 😭",
     "Bir daha düşün 👀",
     "Yakalayamazsın 😌",
-    "Kalbim kırılıyor 💔",
     "Bu buton çok utangaç 🙈",
     "Tamam pes etme bende 😤",
-    "Kaçmak olimpik olsa altın benim 🥇",
+    "Kim daha inatçı göreceğiz...",
     "Evet'e bir şans versene 🥹",
     "Fareni yorma, olmayacak 🐭",
     "Son teklif: EVEEET de 💍"
@@ -33,7 +32,8 @@
 
   window.CONFIG = {
     messages: messages,
-    surrenderAt: 5,
+    // Tüm nudge mesajları gösterildikten sonra teslim ol (mesaj sayısına otomatik bağlı).
+    surrenderAt: messages.length - 1,
     surrenderText: "Peki... Evet o zaman :)",
     reduced: reduced,
     share: share

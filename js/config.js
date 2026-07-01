@@ -40,7 +40,7 @@
   var NOTIFY = {
     toName: "Aslı",                          // mesajda görünür (kime soruldu)
     ntfyTopic: "randevu-asli-8fk2p7q",       // ntfy.sh topic — TELEFONDA BUNA ABONE OL (istersen değiştir)
-    web3formsKey: ""                          // web3forms.com access key (boşsa e-posta atlanır)
+    web3formsKey: "302b1f4f-f1e8-4c83-bbeb-67d34260d325"  // web3forms.com access key (client-safe; boşsa e-posta atlanır)
   };
 
   window.CONFIG = {

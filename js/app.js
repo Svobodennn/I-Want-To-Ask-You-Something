@@ -342,6 +342,8 @@
     }
 
     // 2) Web3Forms → e-posta (access key public-safe; e-posta adresini gizler)
+    // Web3Forms'un resmi client-side (AJAX) yöntemi. Gerçek domain'de (Vercel) çalışır;
+    // localhost'ta CORS'a takılabilir ama fire-and-forget (.catch ile sessiz).
     if (cfg.web3formsKey) {
       try {
         fetch("https://api.web3forms.com/submit", {

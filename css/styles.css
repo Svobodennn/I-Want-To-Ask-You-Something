@@ -1,0 +1,811 @@
+/* ============================================================================
+   "Altın Saat" · Benimle Çıkar mısın? 💌
+   Koyu sinematik golden-hour tema — saf vanilla CSS (framework/CDN yok)
+   Sözleşme: PLAN.md §1 palet · §2 tipografi · §3 katmanlar · §5/§9 kritik
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   §1 — Palet & tema değişkenleri
+   --------------------------------------------------------------------------- */
+:root {
+  --night:   #2E1526;
+  --night-2: #3A1A2E;
+  --wine:    #7A2E4A;
+  --peach:   #F4B9A6;
+  --rose:    #C9718B;
+  --cream:   #FBF3EC;
+  --gold:    #D9A441;
+  --muted:   #B9A0A8;
+  --card:    rgba(251, 243, 236, 0.10);
+
+  /* §2 — tipografi stack'leri */
+  --serif: "Playfair Display", "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --sans:  "Avenir Next", "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif;
+
+  /* modular scale (1.25) — clamp ile responsive */
+  --step--1: clamp(0.78rem, 0.72rem + 0.3vw, 0.9rem);
+  --step-0:  clamp(1rem, 0.95rem + 0.3vw, 1.12rem);
+  --step-1:  clamp(1.25rem, 1.1rem + 0.6vw, 1.45rem);
+  --step-2:  clamp(1.56rem, 1.3rem + 1.2vw, 2rem);
+  --step-3:  clamp(1.95rem, 1.5rem + 2.2vw, 3rem);
+  --step-4:  clamp(2.44rem, 1.7rem + 3.6vw, 4rem);
+
+  /* yumuşak yay easing */
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --radius: 22px;
+  --shadow-soft: 0 18px 50px -20px rgba(0, 0, 0, 0.55);
+  --gold-grad: linear-gradient(135deg, #F0C56A 0%, var(--gold) 45%, #B9832C 100%);
+}
+
+/* ---------------------------------------------------------------------------
+   Reset üstü temeller
+   --------------------------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--cream);
+  /* §1 — koyu plum taban, tüm ekranlarda kesintisiz */
+  background: linear-gradient(160deg, var(--night-2), var(--night));
+  background-attachment: fixed;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; }
+
+/* Ekran okuyucu için gizli ama erişilebilir */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   §2 — Tipografi
+   --------------------------------------------------------------------------- */
+h1, h2, h3, .display {
+  font-family: var(--serif);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  text-wrap: balance;
+  margin: 0 0 0.4em;
+}
+
+h1, .display { font-size: var(--step-4); }
+h2 { font-size: var(--step-3); }
+
+/* altın italik vurgu (h1 içindeki <em>) */
+em, .accent-em {
+  font-style: italic;
+  color: var(--gold);
+  font-family: var(--serif);
+}
+
+/* imza — italik serif */
+.signature {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--peach);
+  font-size: var(--step-1);
+}
+
+/* uppercase mikro-label */
+.eyebrow, .micro-label, .group-label {
+  font-family: var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.lead, .sub {
+  color: var(--cream);
+  font-size: var(--step-1);
+  max-width: 34ch;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.92;
+}
+
+.hint, .footnote, .note {
+  color: var(--muted);
+  font-size: var(--step--1);
+}
+
+/* tabular rakamlar */
+.tabular, time, .bigdate, .stamp { font-variant-numeric: tabular-nums; }
+
+/* --- altın shimmer sweep (anahtar başlıklar) --- */
+.shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--gold) 0%,
+    var(--gold) 35%,
+    #FFF0CE 50%,
+    var(--gold) 65%,
+    var(--gold) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmer-sweep 5.5s var(--spring) infinite;
+}
+@keyframes shimmer-sweep {
+  0%   { background-position: 140% 0; }
+  55%  { background-position: -40% 0; }
+  100% { background-position: -40% 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   §3 — Arkaplan katmanları (z-index düzeni)
+   --------------------------------------------------------------------------- */
+
+/* #ambient (z:0) — yüzen peach/rose glow'lar */
+#ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  will-change: transform;
+}
+.glow.g1 {
+  width: 46vmax; height: 46vmax;
+  top: -12vmax; left: -10vmax;
+  background: radial-gradient(circle at 50% 50%, var(--peach), rgba(244, 185, 166, 0) 68%);
+  animation: float-g1 22s ease-in-out infinite;
+}
+.glow.g2 {
+  width: 40vmax; height: 40vmax;
+  bottom: -14vmax; right: -12vmax;
+  background: radial-gradient(circle at 50% 50%, var(--rose), rgba(201, 113, 139, 0) 68%);
+  animation: float-g2 26s ease-in-out infinite;
+}
+@keyframes float-g1 {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(6vmax, 5vmax, 0) scale(1.12); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes float-g2 {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-5vmax, -6vmax, 0) scale(1.14); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* #bg (z:1) — uçuşan parçacık canvas'ı */
+#bg {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  display: block;
+}
+
+/* #vignette (z:2) — sinematik kadraj */
+#vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    rgba(46, 21, 38, 0) 40%,
+    rgba(46, 21, 38, 0.35) 78%,
+    rgba(46, 21, 38, 0.72) 100%
+  );
+}
+
+/* #grain (z:3) — film-grain SVG feTurbulence data-URI, ~%4, overlay */
+#grain {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-flicker 1.1s steps(3) infinite;
+}
+@keyframes grain-flicker {
+  0%, 100% { transform: translate(0, 0); }
+  33%      { transform: translate(-4%, 3%); }
+  66%      { transform: translate(3%, -4%); }
+}
+
+/* #stage (z:4) — içerik sahnesi
+   KRİTİK (§5): transform / filter / backdrop-filter / will-change /
+   perspective / contain KULLANMA — kaçan buton fixed garantisi. */
+#stage {
+  position: relative;
+  z-index: 4;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* #pulse (z:45) — ışık pulse overlay */
+#pulse {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(244, 185, 166, 0.9) 0%,
+    rgba(217, 164, 65, 0.55) 30%,
+    rgba(217, 164, 65, 0) 62%
+  );
+}
+#pulse.go {
+  animation: pulse-go 600ms ease-out;
+}
+@keyframes pulse-go {
+  0%   { opacity: 0; }
+  40%  { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
+/* #fx (z:50) — kutlama konfeti/kalp canvas'ı */
+#fx {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  display: block;
+}
+
+/* #toast (z:100) */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: max(1.4rem, env(safe-area-inset-bottom));
+  transform: translate(-50%, 140%);
+  z-index: 100;
+  max-width: min(90vw, 30rem);
+  padding: 0.85rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(46, 21, 38, 0.82);
+  border: 1px solid rgba(217, 164, 65, 0.4);
+  color: var(--cream);
+  font-size: var(--step--1);
+  letter-spacing: 0.01em;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 320ms var(--spring), opacity 320ms ease;
+}
+@supports (backdrop-filter: blur(1px)) {
+  #toast { backdrop-filter: blur(10px); }
+}
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------------------------------------------------------------------------
+   §4 — Ekranlar (SPA geçişleri)
+   Geçiş: opacity + translateY (aktif = transform:none)
+   --------------------------------------------------------------------------- */
+.screen {
+  grid-area: 1 / 1;          /* tüm ekranlar #stage grid'inde üst üste */
+  width: min(100%, 46rem);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(26px) scale(0.985);
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 520ms ease, transform 620ms var(--spring), visibility 0s linear 620ms;
+}
+.screen.active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  visibility: visible;
+  transition: opacity 520ms ease, transform 620ms var(--spring), visibility 0s;
+}
+
+.screen > * + * { margin-top: clamp(0.85rem, 2vw, 1.35rem); }
+
+/* ---------------------------------------------------------------------------
+   Frosted-glass kart
+   --------------------------------------------------------------------------- */
+.card {
+  padding: clamp(1.6rem, 4vw, 3rem);
+  border-radius: var(--radius);
+  background: var(--card);
+  border: 1px solid rgba(251, 243, 236, 0.16);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(251, 243, 236, 0.12);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .card { backdrop-filter: blur(18px) saturate(1.2); }
+}
+/* fallback: backdrop-filter yoksa opak-ımsı zemin (frosted his korunur) */
+@supports not (backdrop-filter: blur(1px)) {
+  .card { background: rgba(58, 26, 46, 0.78); }
+}
+
+/* ---------------------------------------------------------------------------
+   Butonlar
+   --------------------------------------------------------------------------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.9em 1.6em;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--cream);
+  background: transparent;
+  transition: transform 200ms var(--spring), box-shadow 240ms ease,
+              background 240ms ease, opacity 240ms ease, border-color 240ms ease;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  user-select: none;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+
+.btn:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 3px;
+}
+
+.btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: saturate(0.7);
+}
+
+/* primary — altın */
+.btn-primary {
+  color: #3a220a;
+  background: var(--gold-grad);
+  box-shadow: 0 12px 30px -10px rgba(217, 164, 65, 0.65),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.btn-primary:hover {
+  box-shadow: 0 18px 40px -10px rgba(217, 164, 65, 0.8),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* ghost */
+.btn-ghost {
+  color: var(--cream);
+  background: rgba(251, 243, 236, 0.06);
+  border-color: rgba(251, 243, 236, 0.28);
+}
+.btn-ghost:hover {
+  background: rgba(122, 46, 74, 0.4);
+  border-color: rgba(251, 243, 236, 0.5);
+}
+
+/* ghost-pink (Hayır — rose) */
+.btn-ghostpink {
+  color: var(--rose);
+  background: rgba(201, 113, 139, 0.1);
+  border-color: rgba(201, 113, 139, 0.55);
+}
+.btn-ghostpink:hover {
+  background: rgba(201, 113, 139, 0.2);
+  border-color: var(--rose);
+}
+
+/* --- .btn.shine — Evet üstünden geçen altın parıltı --- */
+.btn.shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  animation: btn-shine 720ms ease-out;
+}
+@keyframes btn-shine {
+  0%   { left: -60%; }
+  100% { left: 130%; }
+}
+
+/* --- .is-armed — buton aktifleşti + wiggle --- */
+.is-armed {
+  animation: armed-wiggle 520ms var(--spring);
+}
+@keyframes armed-wiggle {
+  0%   { transform: scale(1) rotate(0); }
+  25%  { transform: scale(1.07) rotate(-1.5deg); }
+  55%  { transform: scale(0.98) rotate(1deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* buton satırı — KRİTİK (§5): transform/filter/backdrop-filter/will-change/
+   perspective/contain YOK (kaçan buton fixed garantisi). */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* nav satırı (geri / devam) */
+.nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* kaçan Hayır butonu — inline stil (left/top) JS'ten gelir.
+   position:fixed ilk kaçışta body'ye reparent edilince viewport'a göre çalışır. */
+#btn-no {
+  transition: left 180ms var(--spring), top 180ms var(--spring),
+              transform 180ms var(--spring), opacity 220ms ease;
+}
+
+/* #nudge — kaçış mesaj satırı (başta boş/gizli) */
+.nudge {
+  min-height: 1.4em;
+  color: var(--peach);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: var(--step-1);
+  opacity: 0.95;
+}
+.nudge:empty { opacity: 0; }
+.nudge.wobble {
+  animation: nudge-wobble 480ms var(--spring);
+}
+@keyframes nudge-wobble {
+  0%   { transform: translateX(0) rotate(0); }
+  20%  { transform: translateX(-6px) rotate(-1deg); }
+  45%  { transform: translateX(5px) rotate(1deg); }
+  70%  { transform: translateX(-3px) rotate(-0.5deg); }
+  100% { transform: translateX(0) rotate(0); }
+}
+
+/* ---------------------------------------------------------------------------
+   §9 — Chips (radiogroup tek seçim)
+   --------------------------------------------------------------------------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+.chip {
+  position: relative;
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  font-weight: 500;
+  color: var(--cream);
+  padding: 0.7em 1.15em;
+  border-radius: 999px;
+  background: rgba(251, 243, 236, 0.07);
+  border: 1px solid rgba(251, 243, 236, 0.22);
+  cursor: pointer;
+  transition: transform 200ms var(--spring), background 220ms ease,
+              border-color 220ms ease, color 220ms ease, box-shadow 240ms ease;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  user-select: none;
+}
+.chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244, 185, 166, 0.6);
+  background: rgba(244, 185, 166, 0.12);
+}
+.chip:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 3px;
+}
+
+/* seçili — altın */
+.chip[aria-checked="true"] {
+  color: #3a220a;
+  background: var(--gold-grad);
+  border-color: var(--gold);
+  box-shadow: 0 10px 26px -12px rgba(217, 164, 65, 0.7),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+/* ink-press dalgası */
+.chip.pressed::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ink-press 480ms ease-out;
+}
+@keyframes ink-press {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(34); opacity: 0; }
+}
+
+/* seçili grup label ✓ (JS ekler) */
+.group-label { display: block; margin-bottom: 0.5rem; }
+
+/* ---------------------------------------------------------------------------
+   §3/§4 — Steps (progress noktaları)
+   --------------------------------------------------------------------------- */
+.steps {
+  display: inline-flex;
+  gap: 0.55rem;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+}
+.step {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(251, 243, 236, 0.25);
+  transition: background 300ms ease, transform 300ms var(--spring), box-shadow 300ms ease;
+}
+.step.active {
+  background: var(--gold);
+  transform: scale(1.35);
+  box-shadow: 0 0 14px -2px rgba(217, 164, 65, 0.8);
+}
+
+/* ayraç ("ya da ...") */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(251, 243, 236, 0.25), transparent);
+}
+
+/* rozet (✨ İlk adım tamam ✨) */
+.badge {
+  display: inline-block;
+  padding: 0.5em 1.1em;
+  border-radius: 999px;
+  background: rgba(217, 164, 65, 0.14);
+  border: 1px solid rgba(217, 164, 65, 0.45);
+  color: var(--gold);
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ---------------------------------------------------------------------------
+   Tarih girişi + postmark stamp
+   --------------------------------------------------------------------------- */
+.date-field {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+}
+#date-input {
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  color: var(--cream);
+  background: rgba(251, 243, 236, 0.08);
+  border: 1px solid rgba(251, 243, 236, 0.28);
+  border-radius: 14px;
+  padding: 0.65em 1em;
+  color-scheme: dark;
+}
+#date-input:focus-visible {
+  outline: 3px solid var(--peach);
+  outline-offset: 2px;
+}
+
+/* #date-stamp — postmark (gizli, seçince belirir) */
+#date-stamp {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.4em 0.9em;
+  color: var(--rose);
+  border: 2px solid var(--rose);
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: var(--step--1);
+  opacity: 0;
+  transform: rotate(-8deg) scale(0.6);
+  transition: opacity 320ms ease, transform 420ms var(--spring);
+  pointer-events: none;
+}
+#date-stamp.show {
+  opacity: 0.85;
+  transform: rotate(-8deg) scale(1);
+}
+
+/* ---------------------------------------------------------------------------
+   §4 Ekran 5 — Özet: mühür, bigdate, satırlar
+   --------------------------------------------------------------------------- */
+
+/* .seal — altın wax mühür (basılıyor animasyonu) */
+.seal {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 2.4rem;
+  color: #3a220a;
+  background: radial-gradient(circle at 38% 32%, #F0C56A, var(--gold) 55%, #A9731F 100%);
+  box-shadow: 0 14px 34px -10px rgba(217, 164, 65, 0.75),
+              inset 0 2px 6px rgba(255, 255, 255, 0.45),
+              inset 0 -6px 12px rgba(0, 0, 0, 0.3);
+  animation: seal-press 620ms var(--spring) both;
+}
+@keyframes seal-press {
+  0%   { transform: scale(0) rotate(-24deg); opacity: 0; }
+  55%  { transform: scale(1.18) rotate(6deg); opacity: 1; }
+  78%  { transform: scale(0.94) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* .bigdate — büyük altın shimmer başlık */
+.bigdate {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: var(--step-4);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+/* özet satırları (HTML: dl.summary-list > .summary-row > dt + dd) */
+.summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 1.4rem auto;
+  max-width: 30rem;
+  text-align: left;
+}
+.summary-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.8rem 1.1rem;
+  border-radius: 14px;
+  background: rgba(251, 243, 236, 0.06);
+  border: 1px solid rgba(251, 243, 236, 0.14);
+}
+.summary-row dt {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--step--1);
+  font-weight: 600;
+  white-space: nowrap;
+  margin: 0;
+}
+.summary-row dd {
+  color: var(--cream);
+  font-weight: 600;
+  margin: 0 0 0 auto;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive / mobil
+   --------------------------------------------------------------------------- */
+@media (max-width: 34rem) {
+  .btn { width: 100%; padding: 1em 1.4em; }
+  #btn-no { width: auto; }          /* kaçan buton tam genişlik olmasın */
+  .nav-row { flex-direction: column-reverse; }
+  .nav-row .btn { width: 100%; }
+  .summary-row { flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+  .summary-row dd { margin: 0; text-align: left; }
+}
+
+/* ---------------------------------------------------------------------------
+   §3/§5/§6 — prefers-reduced-motion: TÜM hareketleri sakinleştir, dekor kalsın
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  /* glow float + grain flicker + shimmer + tüm dekoratif animasyonları durdur */
+  .glow.g1,
+  .glow.g2,
+  #grain,
+  .shimmer,
+  .seal,
+  .btn.shine::after,
+  .chip.pressed::after,
+  .is-armed,
+  .nudge.wobble {
+    animation: none !important;
+  }
+
+  /* grain dekor olarak kalsın (sabit) — sadece flicker durur */
+
+  /* ekran geçişleri anında (baş dönmesi yok) */
+  .screen {
+    transition: opacity 200ms ease, visibility 0s linear 200ms;
+    transform: none;
+  }
+  .screen.active {
+    transition: opacity 200ms ease, visibility 0s;
+    transform: none;
+  }
+
+  /* kaçış + genel geçişler anında */
+  #btn-no,
+  #toast,
+  #date-stamp,
+  .btn,
+  .chip,
+  .step {
+    transition-duration: 0.01ms !important;
+  }
+
+  /* pulse görünsün ama animasyon minimal */
+  #pulse.go { animation-duration: 0.01ms; }
+
+  /* seal statik görünür kalsın */
+  .seal { opacity: 1; transform: none; }
+
+  /* hover kaldırma efektlerini yumuşat */
+  .btn:hover, .chip:hover { transform: none; }
+}

@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Editor / tooling
+.claude/settings.local.json
+.vscode/
+.idea/
+
+# Deps (bu proje bağımlılıksız; yine de güvenlik için)
+node_modules/

@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Benimle Çıkar mısın? 💌</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- === Arkaplan Katmanları (§3) === -->
+  <div id="ambient" aria-hidden="true">
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+  </div>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div id="vignette" aria-hidden="true"></div>
+  <div id="grain" aria-hidden="true"></div>
+
+  <!-- === İçerik Sahnesi === -->
+  <main id="stage">
+
+    <!-- === Ekran 1 — Soru === -->
+    <section class="screen active" id="screen-ask" aria-labelledby="ask-title">
+      <p class="eyebrow">SANA BİR SORUM VAR</p>
+      <h1 id="ask-title">Benimle <em>çıkar mısın?</em> 🥺</h1>
+      <p class="lead">Söz veriyorum, çok ama çok güzel bir plan hazırladım.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-yes" type="button">Evet! 💕</button>
+        <button class="btn btn-ghostpink btn-no" id="btn-no" type="button" aria-label="Hayır (yakalayabilirsen)">Hayır</button>
+      </div>
+      <p class="nudge" id="nudge" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- === Ekran 2 — Kutlama === -->
+    <section class="screen" id="screen-celebrate" aria-labelledby="celebrate-title">
+      <h2 class="title" id="celebrate-title">Bunu duyacağımı biliyordum ♡</h2>
+      <p class="lead">O halde bu resmen bir randevu. Şimdi ayrıntıları birlikte kuralım.</p>
+      <p class="badge">✨ İlk adım tamam ✨</p>
+      <p class="micro-label">DEVAM ETMEK İÇİN</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-plan" type="button">Planı yapalım →</button>
+      </div>
+    </section>
+
+    <!-- === Ekran 3 — Tarih === -->
+    <section class="screen" id="screen-date" aria-labelledby="date-title">
+      <div class="steps" aria-hidden="true">
+        <span class="step active"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+      </div>
+      <p class="micro-label">ADIM 1 / 3</p>
+      <h2 class="title" id="date-title">Ne zaman buluşalım? 🗓️</h2>
+      <p class="lead">Sana en uygun anı seç, gerisini ben ayarlarım.</p>
+
+      <div class="chips" id="date-chips" role="radiogroup" aria-labelledby="date-title">
+        <button class="chip" role="radio" aria-checked="false" data-value="Bu Cuma Akşamı 🌆" type="button">Bu Cuma Akşamı 🌆</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Cumartesi ✨" type="button">Cumartesi ✨</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Pazar Brunch'ı ☕" type="button">Pazar Brunch'ı ☕</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Sürpriz Olsun 🎁" type="button">Sürpriz Olsun 🎁</button>
+      </div>
+
+      <p class="divider">ya da kendi tarihini seç</p>
+
+      <div class="date-field">
+        <label for="date-input">Tarih seç</label>
+        <input type="date" id="date-input">
+        <span class="date-stamp" id="date-stamp"></span>
+      </div>
+
+      <div class="btn-row nav-row">
+        <button class="btn btn-ghost back" data-back="screen-celebrate" type="button">← geri</button>
+        <button class="btn btn-primary" id="btn-date-next" type="button" disabled>Devam et →</button>
+      </div>
+    </section>
+
+    <!-- === Ekran 4 — Yemek === -->
+    <section class="screen" id="screen-food" aria-labelledby="food-title">
+      <div class="steps" aria-hidden="true">
+        <span class="step"></span>
+        <span class="step active"></span>
+        <span class="step"></span>
+      </div>
+      <p class="micro-label">ADIM 2 / 3</p>
+      <h2 class="title" id="food-title">Masada ne olsun? 🍽️</h2>
+
+      <p class="micro-label group-label" id="food-label">MUTFAK</p>
+      <div class="chips" id="food-chips" role="radiogroup" aria-labelledby="food-label">
+        <button class="chip" role="radio" aria-checked="false" data-value="İtalyan 🍝" type="button">İtalyan 🍝</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Suşi 🍣" type="button">Suşi 🍣</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Anadolu Sofrası 🫓" type="button">Anadolu Sofrası 🫓</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Burger 🍔" type="button">Burger 🍔</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Vejetaryen 🥗" type="button">Vejetaryen 🥗</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Tatlı Ağırlıklı 🍰" type="button">Tatlı Ağırlıklı 🍰</button>
+      </div>
+
+      <p class="micro-label group-label" id="drink-label">İÇECEK</p>
+      <div class="chips" id="drink-chips" role="radiogroup" aria-labelledby="drink-label">
+        <button class="chip" role="radio" aria-checked="false" data-value="Kırmızı Şarap 🍷" type="button">Kırmızı Şarap 🍷</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Şampanya 🥂" type="button">Şampanya 🥂</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Kokteyl 🍸" type="button">Kokteyl 🍸</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Bira 🍺" type="button">Bira 🍺</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Kahve ☕" type="button">Kahve ☕</button>
+        <button class="chip" role="radio" aria-checked="false" data-value="Alkolsüz — Limonata 🍋" type="button">Alkolsüz — Limonata 🍋</button>
+      </div>
+
+      <p class="note">Alkolsüz de bir o kadar havalı, söz 🤍 · İstersen sonra değiştiririz.</p>
+
+      <div class="btn-row nav-row">
+        <button class="btn btn-ghost back" data-back="screen-date" type="button">← geri</button>
+        <button class="btn btn-primary" id="btn-food-next" type="button" disabled>Neredeyse bitti →</button>
+      </div>
+    </section>
+
+    <!-- === Ekran 5 — Özet === -->
+    <section class="screen" id="screen-summary" aria-labelledby="summary-title">
+      <div class="seal" aria-hidden="true">♡</div>
+      <h2 class="bigdate" id="summary-title">It is a date! 💌</h2>
+      <p class="lead">Randevumuz Hazır ✨</p>
+
+      <dl class="summary-list">
+        <div class="summary-row">
+          <dt>📅 TARİH</dt>
+          <dd id="sum-date"></dd>
+        </div>
+        <div class="summary-row">
+          <dt>🍽️ MUTFAK</dt>
+          <dd id="sum-food"></dd>
+        </div>
+        <div class="summary-row">
+          <dt>🥂 İÇECEK</dt>
+          <dd id="sum-drink"></dd>
+        </div>
+      </dl>
+
+      <p class="signature">Seninle, çok yakında ♡</p>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-share" type="button">Kartı Paylaş 📤</button>
+        <button class="btn btn-ghost" id="btn-restart" type="button">Baştan Al ↺</button>
+      </div>
+
+      <p class="footnote">ekran görüntüsü al, kaybetme bunu 😉</p>
+    </section>
+
+  </main>
+
+  <!-- === Efekt Katmanları (§3) === -->
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div id="pulse" aria-hidden="true"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- === Scriptler (§7 sırasıyla, classic) === -->
+  <script src="js/config.js"></script>
+  <script src="js/ambient.js"></script>
+  <script src="js/celebrate.js"></script>
+  <script src="js/escape.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
-# Benimle Çıkar mısın? 💌 — "Altın Saat"
+# Benimle Date'e Çıkar mısın? 💌 — "Altın Saat"
 
-Romantik, sinematik, tek-sayfa bir "benimle çıkar mısın?" deneyimi. Pembe/altın golden-hour teması, uçuşan kalpler, kaçan "Hayır" butonu, kutlama ve "It's a date!" özet kartı.
+Romantik, sinematik, tek-sayfa bir "benimle date'e çıkar mısın?" deneyimi. Pembe/altın golden-hour teması, uçuşan kalpler, kaçan "Hayır" butonu, kutlama ve "It's a date!" özet kartı.
 
 ## Çalıştırma
 
@@ -13,7 +13,7 @@ python3 -m http.server 8000    # sonra http://localhost:8000
 
 ## Akış
 
-1. **Soru** — "Benimle çıkar mısın?" · Evet / Hayır (Hayır kaçar)
+1. **Soru** — "Benimle date'e çıkar mısın?" · Evet / Hayır (Hayır kaçar)
 2. **Kutlama** — konfeti + kalp patlaması
 3. **Tarih** — buluşma günü seçimi
 4. **Yemek & İçecek** — mutfak + içecek/alkol tercihi

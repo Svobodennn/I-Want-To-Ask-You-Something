@@ -25,6 +25,9 @@
   }
 
   function init() {
+    // Kişiselleştirme (?to=İsim) — başlık/bildirim ismini ayarla (varsa)
+    if (window.Personalize && typeof Personalize.apply === "function") Personalize.apply();
+
     // Arkaplan + kaçan Hayır mekaniği
     if (window.Ambient && typeof Ambient.start === "function") Ambient.start();
     if (window.Escape && typeof Escape.init === "function") Escape.init({ onAccept: goCelebrate });

@@ -16,8 +16,30 @@
     if (dr) dr.textContent = AppState.drink != null ? AppState.drink : "";
   }
 
+  function buildEvent() {
+    return {
+      dateISO: AppState.dateISO,
+      title: "Randevu 💌",
+      description: "Mutfak: " + (AppState.food || "-") + " · İçecek: " + (AppState.drink || "-") + "\nSeninle, çok yakında ♡"
+    };
+  }
+
+  // Takvime Ekle linklerini (ekrana girince) doldur; tarih yoksa gizle.
+  function updateCalendar() {
+    var ics = DOM.$("cal-ics"), gcal = DOM.$("cal-gcal");
+    if (AppState.dateISO && window.CalInvite) {
+      var ev = buildEvent();
+      if (ics) { ics.href = CalInvite.ics(ev); ics.removeAttribute("hidden"); }
+      if (gcal) { gcal.href = CalInvite.gcalUrl(ev); gcal.removeAttribute("hidden"); }
+    } else {
+      if (ics) ics.setAttribute("hidden", "");
+      if (gcal) gcal.setAttribute("hidden", "");
+    }
+  }
+
   function onEnter() {
     render();
+    updateCalendar();
     if (window.Celebrate && typeof Celebrate.rain === "function") Celebrate.rain();
     if (!notified) {
       notified = true;

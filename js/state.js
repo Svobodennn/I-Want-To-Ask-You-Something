@@ -4,11 +4,13 @@
   "use strict";
 
   var AppState = {
-    day: null,
+    day: null,      // gösterim metni (ör. "Cumartesi, 5 Temmuz")
+    dateISO: null,  // takvim daveti için makine tarihi (YYYY-MM-DD)
     food: null,
     drink: null,
     reset: function () {
       this.day = null;
+      this.dateISO = null;
       this.food = null;
       this.drink = null;
     }

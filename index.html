@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Aslı Sana Bişi Sorucam</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+  <!-- Sosyal paylaşım önizlemesi (og:image mutlak URL — deploy domain'ine göre güncelle) -->
+  <meta name="description" content="Sana özel küçük bir sürprizim var 🌸">
+  <meta name="theme-color" content="#2E1526">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Benimle date'e çıkar mısın? 💌">
+  <meta property="og:description" content="Sana özel küçük bir sürprizim var 🌸">
+  <meta property="og:image" content="https://asli-benimle-cikar-misin.vercel.app/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Benimle date'e çıkar mısın? 💌">
+  <meta name="twitter:image" content="https://asli-benimle-cikar-misin.vercel.app/assets/og.png">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -25,7 +35,7 @@
     <section class="screen active" id="screen-ask" aria-labelledby="ask-title">
       <div class="magnolia" aria-hidden="true">🌸</div>
       <p class="eyebrow">Bişi Sorcam...</p>
-      <h1 id="ask-title">Aslı, benimle <em> date'e çıkar mısın?</em> 💌 🌸</h1>
+      <h1 id="ask-title"><span id="ask-name">Aslı</span>, benimle <em>date'e çıkar mısın?</em> 💌 🌸</h1>
       <p class="lead">Söz veriyorum, çok ama çok güzel bir plan hazırladım.</p>
       <div class="btn-row">
         <button class="btn btn-primary" id="btn-yes" type="button">Evet! 💕</button>
@@ -57,8 +67,15 @@
       <p class="lead">Sana en uygun anı seç, gerisini ben ayarlarım.</p>
 
       <div class="chips" id="date-chips" role="radiogroup" aria-labelledby="date-title">
-        <button class="chip" role="radio" aria-checked="false" data-value="Bu Cumartesi ✨" type="button">Bu Cumartesi ✨</button>
-        <button class="chip" role="radio" aria-checked="false" data-value="Bu Pazar 🌸" type="button">Bu Pazar 🌸</button>
+        <button class="chip" role="radio" aria-checked="false" type="button">Bu Cumartesi ✨</button>
+        <button class="chip" role="radio" aria-checked="false" type="button">Bu Pazar 🌸</button>
+      </div>
+
+      <p class="divider">ya da tam tarihi seç</p>
+      <div class="date-field">
+        <label for="date-input" class="sr-only">Tarih seç</label>
+        <input type="date" id="date-input">
+        <span class="date-stamp" id="date-stamp"></span>
       </div>
 
       <div class="btn-row nav-row">
@@ -95,7 +112,7 @@
         <button class="chip" role="radio" aria-checked="false" data-value="Bira 🍺" type="button">Bira 🍺</button>
         <button class="chip" role="radio" aria-checked="false" data-value="Kahve ☕" type="button">Kahve ☕</button>
       </div>
-f
+
       <div class="btn-row nav-row">
         <button class="btn btn-ghost back" data-back="screen-date" type="button">← geri</button>
         <button class="btn btn-primary" id="btn-food-next" type="button" disabled>Neredeyse bitti →</button>
@@ -125,6 +142,11 @@ f
 
       <p class="signature">Seninle, çok yakında ♡</p>
 
+      <div class="cal-row">
+        <a class="btn btn-ghost cal-btn" id="cal-ics" download="randevu.ics" href="#" hidden>🗓️ Takvime Ekle</a>
+        <a class="btn btn-ghost cal-btn" id="cal-gcal" target="_blank" rel="noopener" href="#" hidden>📅 Google Takvim</a>
+      </div>
+
       <div class="btn-row">
         <button class="btn btn-primary" id="btn-download" type="button">Bileti İndir 🎟️</button>
         <button class="btn btn-ghost" id="btn-restart" type="button">Baştan Al ↺</button>
@@ -145,6 +167,7 @@ f
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
   <script src="js/dom.js"></script>
+  <script src="js/personalize.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/screens.js"></script>
   <script src="js/radiogroup.js"></script>

@@ -57,9 +57,21 @@
   }
 
   function init() {
-    try { on = localStorage.getItem(KEY) === "1"; } catch (e) { on = false; }
+    try {
+      var saved = localStorage.getItem(KEY);
+      on = (saved === null) ? true : (saved === "1"); // VARSAYILAN AÇIK (kullanıcı kapatabilir)
+    } catch (e) { on = true; }
     toggleEl = document.getElementById("sound-toggle");
     if (toggleEl) toggleEl.addEventListener("click", toggle);
+    // İlk kullanıcı jestinde AudioContext'i aç (autoplay politikası) — bir kez
+    var unlock = function () {
+      var a = ctx();
+      if (a && a.state === "suspended") { try { a.resume(); } catch (e) {} }
+      document.removeEventListener("pointerdown", unlock);
+      document.removeEventListener("keydown", unlock);
+    };
+    document.addEventListener("pointerdown", unlock);
+    document.addEventListener("keydown", unlock);
     paint();
   }
 

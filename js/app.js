@@ -32,6 +32,9 @@
     // Ses efektleri (opsiyonel, varsayılan kapalı)
     if (window.Sound && typeof Sound.init === "function") Sound.init();
 
+    // "Kendi davetini oluştur" builder
+    if (window.Builder && typeof Builder.init === "function") Builder.init();
+
     // Arkaplan + kaçan Hayır mekaniği
     if (window.Ambient && typeof Ambient.start === "function") Ambient.start();
     if (window.Escape && typeof Escape.init === "function") Escape.init({ onAccept: goCelebrate });

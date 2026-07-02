@@ -44,6 +44,13 @@
         <button class="btn btn-ghostpink btn-no" id="btn-no" type="button" aria-label="Hayır (yakalayabilirsen)">Hayır</button>
       </div>
       <p class="nudge" id="nudge" role="status" aria-live="polite"></p>
+      <div class="builder">
+        <button class="builder-toggle" id="builder-toggle" type="button" aria-expanded="false" aria-controls="builder-panel">💌 Kendi davetini oluştur</button>
+        <div class="builder-panel" id="builder-panel" hidden>
+          <input type="text" id="builder-name" placeholder="Sevgilinin adı" maxlength="40" autocomplete="off" aria-label="Davet edilecek isim">
+          <button class="btn btn-primary" id="builder-copy" type="button">Linki Kopyala 🔗</button>
+        </div>
+      </div>
     </section>
 
     <!-- === Ekran 2 — Kutlama === -->
@@ -177,6 +184,7 @@
   <script src="js/summary-screen.js"></script>
   <script src="js/pwa.js"></script>
   <script src="js/sound.js"></script>
+  <script src="js/builder.js"></script>
   <script src="js/app.js"></script>
 
 </body>

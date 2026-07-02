@@ -186,6 +186,7 @@
   function flee(fromX, fromY) {
     if (surrendered || !btnNo) return;
     lastFleeAt = now();
+    if (window.Sound) Sound.play("flee");
     ensureReparented();
 
     var pos = pickNewPosition(fromX, fromY);

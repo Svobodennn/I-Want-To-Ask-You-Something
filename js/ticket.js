@@ -112,6 +112,7 @@
       a.remove();
       toast("Biletin indirildi ♡");
       mini();
+      if (window.Sound) Sound.play("chime");
     } catch (err) {
       toast("İndirilemedi, ekran görüntüsü al 😉");
     }

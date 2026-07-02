@@ -6,6 +6,7 @@
 
   // Evet (veya kaçan Hayır teslim olunca) → kutlama ekranı
   function goCelebrate() {
+    if (window.Sound) Sound.play("win");
     if (window.Escape && typeof Escape.disable === "function") Escape.disable();
     if (window.Celebrate && typeof Celebrate.burst === "function") {
       var c = DOM.centerOf(DOM.$("btn-yes"));
@@ -27,6 +28,9 @@
   function init() {
     // Kişiselleştirme (?to=İsim) — başlık/bildirim ismini ayarla (varsa)
     if (window.Personalize && typeof Personalize.apply === "function") Personalize.apply();
+
+    // Ses efektleri (opsiyonel, varsayılan kapalı)
+    if (window.Sound && typeof Sound.init === "function") Sound.init();
 
     // Arkaplan + kaçan Hayır mekaniği
     if (window.Ambient && typeof Ambient.start === "function") Ambient.start();

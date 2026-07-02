@@ -23,6 +23,7 @@
         chips[i].setAttribute("aria-checked", chips[i] === chip ? "true" : "false");
       }
       chip.classList.add("pressed");
+      if (window.Sound) Sound.play("pop");
       window.setTimeout(function () { chip.classList.remove("pressed"); }, 420);
       refreshTabindex();
       if (typeof onPick === "function") onPick(chip.dataset.value, chip);

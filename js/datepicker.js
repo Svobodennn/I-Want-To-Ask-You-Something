@@ -82,6 +82,7 @@
 
     function pick(isoStr, dateObj) {
       selISO = isoStr;
+      if (window.Sound) Sound.play("pop");
       render();
       onSelect(isoStr, dateObj.toLocaleDateString("tr-TR", { weekday: "long", day: "numeric", month: "long" }));
     }

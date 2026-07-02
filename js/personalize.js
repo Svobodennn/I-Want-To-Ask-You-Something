@@ -19,13 +19,16 @@
 
   function apply() {
     var to = clean(param("to"));
-    if (!to) return; // param yoksa varsayılan ("Aslı") kalır
-    var nameEl = window.DOM ? DOM.$("ask-name") : document.getElementById("ask-name");
-    if (nameEl) nameEl.textContent = to;
-    // bildirim mesajında da bu isim görünsün
-    if (window.CONFIG && CONFIG.notify) CONFIG.notify.toName = to;
-    // sekme başlığı (opsiyonel dokunuş)
-    try { document.title = to + ", benimle date'e çıkar mısın? 💌"; } catch (e) {}
+    if (to) {
+      var nameEl = window.DOM ? DOM.$("ask-name") : document.getElementById("ask-name");
+      if (nameEl) nameEl.textContent = to;
+      // bildirim mesajında da bu isim görünsün
+      if (window.CONFIG && CONFIG.notify) CONFIG.notify.toName = to;
+    }
+    // Sekme başlığı: ?to= varsa isimli, yoksa isimsiz
+    try {
+      document.title = to ? (to + ", Sana Bişi Sorucam 💌") : "Sana Bişi Sorucam 💌";
+    } catch (e) {}
   }
 
   window.Personalize = { apply: apply };

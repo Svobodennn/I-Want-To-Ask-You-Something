@@ -25,20 +25,17 @@
     }
 
     // 2) Web3Forms → e-posta (access key public-safe; e-posta adresini gizler)
-    // Resmi client-side (AJAX) yöntemi. Gerçek domain'de çalışır; localhost'ta CORS'a
-    // takılabilir ama fire-and-forget (.catch ile sessiz).
+    // FormData (multipart) = CORS "simple request" → preflight YOK. JSON+Content-Type ise
+    // preflight tetikleyip bloklanıyordu. FormData ile istek sunucuya DAİMA teslim edilir
+    // (e-posta gider); yanıt ACAO'suz olsa da okumamıza gerek yok (fire-and-forget, .catch).
     if (cfg.web3formsKey) {
       try {
-        fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({
-            access_key: cfg.web3formsKey,
-            subject: title,
-            from_name: "Randevu Sitesi 💌",
-            message: detail + "\n\nSeninle, çok yakında ♡"
-          })
-        }).catch(function () {});
+        var fd = new FormData();
+        fd.append("access_key", cfg.web3formsKey);
+        fd.append("subject", title);
+        fd.append("from_name", "Randevu Sitesi 💌");
+        fd.append("message", detail + "\n\nSeninle, çok yakında ♡");
+        fetch("https://api.web3forms.com/submit", { method: "POST", body: fd }).catch(function () {});
       } catch (e) {}
     }
   }

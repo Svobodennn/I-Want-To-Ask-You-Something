@@ -723,6 +723,22 @@ em, .accent-em {
   100% { transform: scale(1) rotate(0); opacity: 1; }
 }
 
+/* Randevuya geri sayım rozeti (özet) */
+.countdown {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 0.35em 1em;
+  border-radius: 999px;
+  background: rgba(217, 164, 65, 0.14);
+  border: 1px solid rgba(217, 164, 65, 0.4);
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.countdown:empty { display: none; }
+
 /* .bigdate — büyük altın shimmer başlık */
 .bigdate {
   font-family: var(--serif);

@@ -310,6 +310,16 @@
     burst(x, y, isReduced() ? 12 : 24, { hearts: true });
   }
 
+  // tap(x,y) — çok hafif: dokunulan noktada 1-3 kalp süzülür (tap-to-heart mikro-etkileşimi).
+  function tap(x, y) {
+    if (!ensureCanvas()) return;
+    var reduced = isReduced();
+    var n = reduced ? 1 : 3;
+    var list = [];
+    for (var i = 0; i < n; i++) list.push(makeHeart(x, y, { reduced: reduced }));
+    addParticles(list);
+  }
+
   // rain() — üstten kalp yağmuru (Ekran 5).
   function rain() {
     if (!ensureCanvas()) return;
@@ -332,6 +342,7 @@
     burst: burst,
     fountain: fountain,
     mini: mini,
+    tap: tap,
     rain: rain,
     pulse: pulse
   };

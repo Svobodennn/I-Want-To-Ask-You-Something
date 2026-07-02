@@ -37,9 +37,24 @@
     }
   }
 
+  // Seçilen tarihe kalan gün — "Randevuya X gün ✨"
+  function updateCountdown() {
+    var elc = DOM.$("countdown");
+    if (!elc) return;
+    if (!AppState.dateISO) { elc.textContent = ""; return; }
+    var p = AppState.dateISO.split("-");
+    var target = new Date(+p[0], +p[1] - 1, +p[2]); target.setHours(0, 0, 0, 0);
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var days = Math.round((target - today) / 86400000);
+    if (days <= 0) elc.textContent = "Randevumuz bugün! 🎉";
+    else if (days === 1) elc.textContent = "Randevuya 1 gün — yarın! ✨";
+    else elc.textContent = "Randevuya " + days + " gün ✨";
+  }
+
   function onEnter() {
     render();
     updateCalendar();
+    updateCountdown();
     if (window.Celebrate && typeof Celebrate.rain === "function") Celebrate.rain();
     if (!notified) {
       notified = true;

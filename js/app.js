@@ -35,6 +35,9 @@
     // "Kendi davetini oluştur" builder
     if (window.Builder && typeof Builder.init === "function") Builder.init();
 
+    // Tap-to-heart mikro-etkileşimi (her dokunuşta kalp)
+    if (window.TapHearts && typeof TapHearts.init === "function") TapHearts.init();
+
     // Arkaplan + kaçan Hayır mekaniği
     if (window.Ambient && typeof Ambient.start === "function") Ambient.start();
     if (window.Escape && typeof Escape.init === "function") Escape.init({ onAccept: goCelebrate });

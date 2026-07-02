@@ -779,6 +779,7 @@ em, .accent-em {
   padding: 0.55em 1.1em;
   text-decoration: none;
 }
+.btn[hidden] { display: none; }
 .cal-btn[hidden] { display: none; }
 
 /* ---------------------------------------------------------------------------

@@ -68,6 +68,9 @@
     // Geri butonları + başlangıç ekranı
     Screens.wireBack();
     Screens.show("screen-ask");
+
+    // PWA (ana ekrana ekle / offline) — güvenli origin'de kaydolur
+    if (window.PWA && typeof PWA.register === "function") PWA.register();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

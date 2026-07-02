@@ -1,6 +1,6 @@
-/* ticket.js — window.Ticket: özet kartını canvas'a çizip PNG olarak indirir.
-   Offline, kütüphane YOK. SRP: bilet görseli üretimi + indirme.
-   Bağımlılıklar: window.AppState (değerler), window.Toast (bildirim), window.Celebrate (mini burst). */
+/* ticket.js — window.Ticket: özet kartını canvas'a çizip PNG olarak İNDİRİR veya PAYLAŞIR.
+   Offline, kütüphane YOK. SRP: bilet görseli üretimi + indirme/paylaşım.
+   Bağımlılıklar: window.AppState, window.Toast, window.Celebrate. */
 (function () {
   "use strict";
 
@@ -14,7 +14,6 @@
     g.closePath();
   }
 
-  // Metni maxW'ye sığana kadar font boyutunu küçült.
   function fitFont(g, text, maxW, weight, startPx, family) {
     var px = startPx;
     do {
@@ -26,20 +25,22 @@
   }
 
   function toast(msg) { if (window.Toast) Toast.show(msg); }
+  function mini() { if (window.Celebrate && typeof Celebrate.mini === "function") Celebrate.mini(); }
 
-  function download() {
+  // Bileti canvas'a çiz ve döndür (null → context alınamadı).
+  function render() {
     var state = window.AppState || {};
     var W = 1080, H = 1350;
     var cv = document.createElement("canvas");
     cv.width = W; cv.height = H;
     var g = cv.getContext("2d");
-    if (!g) { toast("İndirilemedi, ekran görüntüsü al 😉"); return; }
+    if (!g) return null;
 
     var SERIF = 'Georgia, "Times New Roman", serif';
     var SANS = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
     var cx = W / 2;
 
-    // 1) Golden-hour zemin: koyu plum + iki radial glow + vignette
+    // Zemin: golden-hour + vignette
     g.fillStyle = "#2E1526"; g.fillRect(0, 0, W, H);
     var gl1 = g.createRadialGradient(W * 0.2, H * 0.14, 0, W * 0.2, H * 0.14, W * 0.95);
     gl1.addColorStop(0, "rgba(244,185,166,0.42)"); gl1.addColorStop(0.55, "rgba(244,185,166,0)");
@@ -53,25 +54,22 @@
 
     g.textAlign = "center"; g.textBaseline = "middle";
 
-    // 2) Altın mühür + ♡
+    // Mühür + ♡
     var sealY = 216, sealR = 82;
     var sg = g.createRadialGradient(cx - 26, sealY - 26, 8, cx, sealY, sealR);
     sg.addColorStop(0, "#F0C56A"); sg.addColorStop(0.55, "#D9A441"); sg.addColorStop(1, "#A9731F");
     g.beginPath(); g.arc(cx, sealY, sealR, 0, Math.PI * 2); g.fillStyle = sg; g.fill();
     g.fillStyle = "#3a220a"; g.font = "66px " + SERIF; g.fillText("♡", cx, sealY + 4);
 
-    // 3) Başlık
+    // Başlık + alt başlık
     g.fillStyle = "#FBF3EC";
     var tPx = fitFont(g, "It is a date! 💌", W - 140, "700", 96, SERIF);
     g.font = "700 " + tPx + "px " + SERIF;
     g.fillText("It is a date! 💌", cx, 392);
-
-    // 4) Alt başlık
-    g.fillStyle = "rgba(251,243,236,0.82)";
-    g.font = "40px " + SANS;
+    g.fillStyle = "rgba(251,243,236,0.82)"; g.font = "40px " + SANS;
     g.fillText("Randevumuz Hazır ✨", cx, 476);
 
-    // 5) Satırlar (label sol · değer sağ)
+    // Satırlar
     var rows = [
       { label: "📅  TARİH", value: state.day || "—" },
       { label: "🍽️  MUTFAK", value: state.food || "—" },
@@ -92,14 +90,19 @@
       g.fillText(rows[i].value, rowX + rowW - 42, ry + rowH / 2);
     }
 
-    // 6) İmza + 7) footer
+    // İmza + footer
     g.textAlign = "center"; g.fillStyle = "rgba(233,190,180,0.95)";
     g.font = "italic 46px " + SERIF;
     g.fillText("Seninle, çok yakında ♡", cx, startY + 3 * (rowH + gap) + 46);
     g.fillStyle = "rgba(185,160,168,0.72)"; g.font = "28px " + SANS;
     g.fillText("· bu senin biletin ·", cx, H - 66);
 
-    // 8) PNG olarak indir
+    return cv;
+  }
+
+  function download() {
+    var cv = render();
+    if (!cv) { toast("İndirilemedi, ekran görüntüsü al 😉"); return; }
     try {
       var a = document.createElement("a");
       a.download = "randevu-bileti.png";
@@ -108,11 +111,37 @@
       a.click();
       a.remove();
       toast("Biletin indirildi ♡");
-      if (window.Celebrate && typeof Celebrate.mini === "function") Celebrate.mini();
+      mini();
     } catch (err) {
       toast("İndirilemedi, ekran görüntüsü al 😉");
     }
   }
 
-  window.Ticket = { download: download };
+  // Web Share (dosya) destekleniyor mu?
+  function canShare() {
+    try {
+      if (!navigator.canShare || typeof File === "undefined") return false;
+      return navigator.canShare({ files: [new File([new Blob()], "randevu-bileti.png", { type: "image/png" })] });
+    } catch (e) { return false; }
+  }
+
+  function share() {
+    var cv = render();
+    if (!cv || !cv.toBlob || !navigator.canShare) { download(); return; }
+    cv.toBlob(function (blob) {
+      if (!blob) { download(); return; }
+      var file = new File([blob], "randevu-bileti.png", { type: "image/png" });
+      if (!navigator.canShare({ files: [file] })) { download(); return; }
+      navigator.share({
+        files: [file],
+        title: "It is a date! 💌",
+        text: "Randevumuz hazır 💌 Seninle, çok yakında ♡"
+      }).then(mini).catch(function (err) {
+        if (err && err.name === "AbortError") return; // kullanıcı iptal etti
+        download();
+      });
+    }, "image/png");
+  }
+
+  window.Ticket = { render: render, download: download, share: share, canShare: canShare };
 })();

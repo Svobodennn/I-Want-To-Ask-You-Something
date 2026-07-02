@@ -51,6 +51,12 @@
     Screens.onEnter("screen-summary", onEnter);
     var btnDownload = DOM.$("btn-download");
     if (btnDownload && window.Ticket) btnDownload.addEventListener("click", Ticket.download);
+    // Paylaş: yalnız Web Share (dosya) destekleniyorsa göster (mobil)
+    var btnShare = DOM.$("btn-share");
+    if (btnShare && window.Ticket && typeof Ticket.canShare === "function" && Ticket.canShare()) {
+      btnShare.removeAttribute("hidden");
+      btnShare.addEventListener("click", Ticket.share);
+    }
   }
 
   function reset() {

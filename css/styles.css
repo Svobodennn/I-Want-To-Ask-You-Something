@@ -440,6 +440,11 @@ em, .accent-em {
   background: rgba(201, 113, 139, 0.2);
   border-color: var(--rose);
 }
+/* Kaçarken: opak zemin + gölge → içeriğin ÜSTÜNDE net dursun (yarı-saydam kalıp metni göstermesin) */
+#btn-no.fleeing {
+  background: rgba(46, 21, 38, 0.94);
+  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6);
+}
 
 /* --- .btn.shine — Evet üstünden geçen altın parıltı --- */
 .btn.shine::after {
@@ -775,6 +780,59 @@ em, .accent-em {
   text-decoration: none;
 }
 .cal-btn[hidden] { display: none; }
+
+/* ---------------------------------------------------------------------------
+   Özel takvim (DatePicker) — native date input yerine tema uyumlu ay-ızgarası
+   --------------------------------------------------------------------------- */
+.cal {
+  width: min(100%, 340px);
+  margin: 0.4rem auto 0;
+  padding: 1rem 1rem 1.15rem;
+  border-radius: 20px;
+  background: var(--card);
+  border: 1px solid rgba(251, 243, 236, 0.16);
+  box-shadow: var(--shadow-soft);
+  text-align: initial;
+}
+@supports (backdrop-filter: blur(1px)) { .cal { backdrop-filter: blur(14px) saturate(1.1); } }
+.cal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+.cal-title { font-family: var(--serif); font-size: var(--step-1); font-weight: 700; color: var(--cream); }
+.cal-nav {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(251, 243, 236, 0.2);
+  background: rgba(251, 243, 236, 0.06); color: var(--cream);
+  font-size: 1.4rem; line-height: 1; cursor: pointer;
+  display: grid; place-items: center;
+  transition: background 160ms, color 160ms, transform 160ms;
+}
+.cal-nav:hover:not(:disabled) { background: var(--gold); color: #3a220a; transform: scale(1.06); }
+.cal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.cal-nav:focus-visible { outline: 3px solid var(--peach); outline-offset: 2px; }
+.cal-wd { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 6px; }
+.cal-wd-c {
+  text-align: center; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--muted); padding: 4px 0;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day {
+  aspect-ratio: 1 / 1;
+  border: none; background: transparent; color: var(--cream);
+  font-family: var(--sans); font-size: 0.95rem; border-radius: 12px;
+  cursor: pointer; display: grid; place-items: center;
+  transition: background 140ms, color 140ms, transform 140ms;
+}
+.cal-day.empty { visibility: hidden; cursor: default; }
+.cal-day:hover:not(.disabled):not(.sel) { background: rgba(251, 243, 236, 0.1); }
+.cal-day.today { box-shadow: inset 0 0 0 1.5px var(--rose); }
+.cal-day.sel {
+  background: var(--gold-grad); color: #3a220a; font-weight: 700;
+  box-shadow: 0 6px 16px -6px rgba(217, 164, 65, 0.7);
+}
+.cal-day.disabled { color: rgba(185, 160, 168, 0.32); cursor: not-allowed; }
+.cal-day:focus-visible { outline: 3px solid var(--peach); outline-offset: 2px; }
 
 /* ---------------------------------------------------------------------------
    Responsive / mobil

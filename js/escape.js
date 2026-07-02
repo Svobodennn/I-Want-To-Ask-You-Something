@@ -83,7 +83,8 @@
     document.body.appendChild(btnNo);
     btnNo.style.position = "fixed";
     btnNo.style.margin = "0";
-    btnNo.style.zIndex = "60"; // #stage(4)/#pulse(45)/#fx(50) üstünde, #toast(100) altında
+    btnNo.style.zIndex = "95"; // tüm içerik + #pulse(45)/#fx(50) üstünde, #toast(100) altında
+    btnNo.classList.add("fleeing"); // opak zemin → metni örter
     btnNo.style.left = Math.round(r.left) + "px";
     btnNo.style.top = Math.round(r.top) + "px";
     btnNo.style.transition = reduced() ? "none" : SPRING;
@@ -356,6 +357,7 @@
         btnNo.textContent = "Hayır";
         btnNo.setAttribute("aria-label", "Hayır (yakalayabilirsen)");
         btnNo.classList.remove("shine");
+        btnNo.classList.remove("fleeing");
       }
       if (btnYes) {
         btnYes.style.transform = "";

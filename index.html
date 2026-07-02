@@ -66,17 +66,7 @@
       <h2 class="title" id="date-title">Ne zaman buluşalım? 🗓️</h2>
       <p class="lead">Sana en uygun anı seç, gerisini ben ayarlarım.</p>
 
-      <div class="chips" id="date-chips" role="radiogroup" aria-labelledby="date-title">
-        <button class="chip" role="radio" aria-checked="false" type="button">Bu Cumartesi ✨</button>
-        <button class="chip" role="radio" aria-checked="false" type="button">Bu Pazar 🌸</button>
-      </div>
-
-      <p class="divider">ya da tam tarihi seç</p>
-      <div class="date-field">
-        <label for="date-input" class="sr-only">Tarih seç</label>
-        <input type="date" id="date-input">
-        <span class="date-stamp" id="date-stamp"></span>
-      </div>
+      <div id="date-calendar" class="cal" aria-label="Buluşma tarihi"></div>
 
       <div class="btn-row nav-row">
         <button class="btn btn-ghost back" data-back="screen-celebrate" type="button">← geri</button>
@@ -171,6 +161,7 @@
   <script src="js/toast.js"></script>
   <script src="js/screens.js"></script>
   <script src="js/radiogroup.js"></script>
+  <script src="js/datepicker.js"></script>
   <script src="js/ambient.js"></script>
   <script src="js/celebrate.js"></script>
   <script src="js/calendar.js"></script>

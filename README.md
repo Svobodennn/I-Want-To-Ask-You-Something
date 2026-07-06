@@ -1,88 +1,90 @@
-# Sana Bişi Sorucam 💌 — "Altın Saat"
+# I Want To Ask You Something 💌
 
-Romantik, sinematik, tek-sayfa bir "benimle çıkar mısın?" deneyimi. Koyu golden-hour teması, uçuşan kalpler, kaçan "Hayır" butonu, kutlama ve "It is a date!" bilet kartı. **Framework yok, bağımlılık yok, build yok** — saf HTML/CSS/vanilla JS, offline çalışır.
+> 🇹🇷 Türkçe README için: [README.tr.md](README.tr.md)
 
-**🔗 Canlı:** https://sana-bisi-sorucam.vercel.app
+A romantic, cinematic, single-page **"will you go on a date with me?"** experience. Dark golden-hour theme, floating hearts, a "No" button that runs away (and eventually gives up), a celebration burst and an "It is a date!" ticket card. **No framework, no dependencies, no build** — pure HTML/CSS/vanilla JS, works offline.
 
-## Akış (5 ekran)
+**🔗 Live demo (in Turkish):** https://sana-bisi-sorucam.vercel.app — original title: *"Sana Bişi Sorucam"*
 
-1. **Soru** — "Benimle çıkar mısın?" · Evet / Hayır (Hayır kaçar, sonunda teslim olur)
-2. **Kutlama** — konfeti + emoji patlaması
-3. **Tarih** — özel tasarım takvim (native picker değil)
-4. **Yemek & İçecek** — mutfak + içecek tercihi
-5. **Özet** — "It is a date!" bilet kartı + geri sayım + indir/paylaş
+## The flow (5 screens)
 
-## Özellikler
+1. **The question** — "Will you go on a date with me?" · Yes / No (the No button escapes… then surrenders)
+2. **Celebration** — confetti + emoji burst
+3. **Date** — custom-designed calendar (not the native picker)
+4. **Food & drinks** — cuisine + drink preferences
+5. **Summary** — "It is a date!" ticket card + countdown + download/share
 
-- 🗓️ **Özel tema takvim** — ay navigasyonu, TR/Pazartesi-başlangıç, geçmiş günler kapalı, klavye gezinme
-- 💌 **Kişiselleştirme** — `?to=İsim` ile başlık ve bildirim ismi değişir; sekme başlığı da dinamik
-- 🔗 **"Kendi davetini oluştur"** — isim gir → paylaşılabilir `?to=` linki üretir
-- 📅 **Takvime Ekle** — `.ics` indirme + Google Calendar linki
-- 🎟️ **Bilet** — özet kartını PNG olarak **indir** veya **paylaş** (Web Share API, mobil)
-- 📲 **PWA** — "ana ekrana ekle", offline çalışır
-- 🔊 **Ses efektleri** — varsayılan açık (sağ üstten kapatılır), WebAudio ile sentezlenmiş
-- 💗 **Tap-to-heart** — ekrana her dokunuşta kalp uçar
-- ⏳ **Geri sayım** — özette "Randevuya X gün ✨"
-- 🔔 **Canlı bildirim** — biri tamamlayınca sana anında **ntfy push + e-posta** (bkz. aşağı)
-- ♿ Erişilebilir (klavye, ARIA, `prefers-reduced-motion`) · mobil uyumlu
+## Features
 
-## Çalıştırma (local)
+- 🗓️ **Custom themed calendar** — month navigation, Monday-first, past days disabled, keyboard navigation
+- 💌 **Personalization** — `?to=Name` customizes the headline, tab title and notifications
+- 🔗 **"Create your own invite"** — enter a name → get a shareable `?to=` link
+- 📅 **Add to calendar** — `.ics` download + Google Calendar link
+- 🎟️ **Ticket** — **download** the summary card as PNG or **share** it (Web Share API, mobile)
+- 📲 **PWA** — add to home screen, works offline
+- 🔊 **Sound effects** — on by default (toggle top-right), synthesized with WebAudio
+- 💗 **Tap-to-heart** — hearts fly on every tap
+- ⏳ **Countdown** — "X days until the date ✨" on the summary
+- 🔔 **Live notifications** — instant **ntfy push + email** the moment someone completes the flow (secrets stay server-side — see below)
+- ♿ Accessible (keyboard, ARIA, `prefers-reduced-motion`) · mobile-friendly
 
-Kurulum gerekmez — `index.html`'e **çift tıkla**, tarayıcıda açılır (offline).
+## Run locally
 
-Ya da basit bir sunucuyla (PWA/bildirim gibi bazı özellikler `file://` yerine `http` ister):
+No install needed — **double-click `index.html`** and it opens in the browser (offline).
+
+Or use a simple server (some features like PWA prefer `http` over `file://`):
 ```bash
 python3 -m http.server 8000        # → http://localhost:8000
 ```
 
-## Canlı bildirim kurulumu
+## Notification setup
 
-Sırlar kodda değil, **Vercel ortam değişkenlerinde** durur. Özet ekranına ulaşılınca site kendi
-`/api/notify` fonksiyonuna POST atar; fonksiyon (api/notify.js) sırları env'den okuyup servislere
-iletir — tarayıcıya anahtar/topic hiç inmez.
+Secrets are **not in the code** — they live in **Vercel environment variables**. When the summary
+screen is reached, the site POSTs to its own `/api/notify` serverless function (api/notify.js),
+which reads the secrets from env and forwards to the services — no key or topic ever reaches the browser.
 
 Vercel → Project → **Settings → Environment Variables**:
 
-| Değişken | Değer |
+| Variable | Value |
 |---|---|
-| `NTFY_TOPIC` | [ntfy](https://ntfy.sh) topic'in (telefonda ntfy uygulamasından aynı topic'e abone ol) |
-| `WEB3FORMS_KEY` | [web3forms.com](https://web3forms.com) ücretsiz access key |
+| `NTFY_TOPIC` | your [ntfy](https://ntfy.sh) topic (subscribe to the same topic in the ntfy app) |
+| `WEB3FORMS_KEY` | free access key from [web3forms.com](https://web3forms.com) |
 
-Boş bırakılan kanal atlanır. Bildirim mesajı seçilen tarih/mutfak/içeceği içerir.
-Not: bildirim yalnız Vercel deploy'unda çalışır — local `file://` / `http.server`'da `/api` yoktur, istek sessizce düşer (site etkilenmez).
+Empty channels are skipped. The notification includes the chosen date/cuisine/drink.
+Note: notifications only work on the Vercel deployment — local `file://` / `http.server` has no `/api`, so the request fails silently (the site itself is unaffected).
 
-## Yayınlama
+## Deploy
 
-Statik site — herhangi bir statik host'a konur. Vercel'de production branch `master`'a bağlıdır:
+Static site + one serverless function — made for Vercel. Production tracks the `master` branch:
 ```bash
-npx vercel --prod            # ya da GitHub repo'yu Vercel'e bağla (master → prod)
+npx vercel --prod            # or connect the GitHub repo to Vercel (master → prod)
 ```
-Not: `index.html`'deki `og:image` mutlak URL'i deploy domain'ine göre ayarlanmalı (sosyal önizleme için).
+Note: set the absolute `og:image` URL in `index.html` to your deploy domain (for social previews).
 
-## Yapı (katmanlı, SRP)
+## Architecture (layered, SRP)
 
 ```
 index.html · css/styles.css · manifest.webmanifest · sw.js
-api/notify.js     # serverless bildirim köprüsü (sırlar Vercel env'de)
+api/notify.js     # serverless notification bridge (secrets in Vercel env)
 assets/           # og.png (1200x630) + icon-192/512.png
 js/
-  config.js                       # sabitler, mesajlar, bildirim ayarları
-  state.js                        # AppState — tek state kaynağı
-  dom.js · toast.js · screens.js · radiogroup.js · datepicker.js · personalize.js   # temeller/UI
-  ambient.js · celebrate.js · escape.js                                            # efektler
-  calendar.js · ticket.js · notify.js · sound.js · pwa.js                          # servisler
-  date-screen.js · food-screen.js · summary-screen.js                              # ekran controller'ları
-  builder.js · tap-hearts.js                                                       # ekstralar
-  app.js                          # kompozisyon kökü (modülleri bağlar)
+  config.js                       # constants, copy, notification settings
+  state.js                        # AppState — single source of truth
+  dom.js · toast.js · screens.js · radiogroup.js · datepicker.js · personalize.js   # foundations/UI
+  ambient.js · celebrate.js · escape.js                                             # effects
+  calendar.js · ticket.js · notify.js · sound.js · pwa.js                           # services
+  date-screen.js · food-screen.js · summary-screen.js                               # screen controllers
+  builder.js · tap-hearts.js                                                        # extras
+  app.js                          # composition root (wires the modules)
 ```
 
-Modüller `window` namespace + `Screens.onEnter` hook'ları ile gevşek bağlıdır; bağımlılık yönü tek taraflı (controller → servis/temel). JS'ler classic script (ES module değil) — `file://` uyumu için.
+Modules are loosely coupled via a `window` namespace + `Screens.onEnter` hooks; the dependency direction is one-way (controllers → services/foundations). Plain classic scripts (no ES modules) — for `file://` compatibility.
 
-## Teknik notlar
+## Tech notes
 
-- Bağımlılık/CDN/build **yok**; iki `<canvas>` (ambient + kutlama), WebAudio, SVG grain data-URI.
-- Offline (`file://` çift-tık), PWA offline shell (service worker cache-first).
-- `prefers-reduced-motion` her katmanda; XSS'e karşı değerler `textContent` ile yazılır.
-- Playwright ile doğrulanır (akış · mobil · bildirim/PWA).
+- Zero dependencies/CDN/build; two `<canvas>` layers (ambient + celebration), WebAudio, SVG grain data-URI.
+- Offline-first: double-click `file://` works; PWA offline shell (cache-first service worker).
+- `prefers-reduced-motion` respected at every layer; values are rendered with `textContent` (XSS-safe).
+- Verified with Playwright (flow · mobile · notifications/PWA).
 
-`PLAN.md` — tasarım & teknik sözleşme (tek doğruluk kaynağı).
+`PLAN.md` — design & technical contract (source of truth, in Turkish).

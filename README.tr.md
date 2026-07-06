@@ -2,13 +2,13 @@
 
 # Sana Bişi Sorucam 💌 — "Altın Saat"
 
-Romantik, sinematik, tek-sayfa bir "benimle date'e çıkar mısın?" deneyimi. Koyu golden-hour teması, uçuşan kalpler, kaçan "Hayır" butonu, kutlama ve "It is a date!" bilet kartı. **Framework yok, bağımlılık yok, build yok** — saf HTML/CSS/vanilla JS, offline çalışır.
+Romantik, sinematik, tek-sayfa bir "benimle çıkar mısın?" deneyimi. Koyu golden-hour teması, uçuşan kalpler, kaçan "Hayır" butonu, kutlama ve "It is a date!" bilet kartı. **Framework yok, bağımlılık yok, build yok** — saf HTML/CSS/vanilla JS, offline çalışır.
 
 **🔗 Canlı:** https://sana-bisi-sorucam.vercel.app
 
 ## Akış (5 ekran)
 
-1. **Soru** — "Benimle date'e çıkar mısın?" · Evet / Hayır (Hayır kaçar, sonunda teslim olur)
+1. **Soru** — "Benimle çıkar mısın?" · Evet / Hayır (Hayır kaçar, sonunda teslim olur)
 2. **Kutlama** — konfeti + emoji patlaması
 3. **Tarih** — özel tasarım takvim (native picker değil)
 4. **Yemek & İçecek** — mutfak + içecek tercihi
@@ -25,30 +25,37 @@ Romantik, sinematik, tek-sayfa bir "benimle date'e çıkar mısın?" deneyimi. K
 - 🔊 **Ses efektleri** — varsayılan açık (sağ üstten kapatılır), WebAudio ile sentezlenmiş
 - 💗 **Tap-to-heart** — ekrana her dokunuşta kalp uçar
 - ⏳ **Geri sayım** — özette "Randevuya X gün ✨"
-- 🔔 **Canlı bildirim** — biri tamamlayınca sana anında **ntfy push + e-posta** (bkz. aşağı)
+- 🔔 **Canlı bildirim** — biri tamamlayınca sana anında **ntfy push + e-posta** (sırlar sunucu tarafında — bkz. aşağı)
 - ♿ Erişilebilir (klavye, ARIA, `prefers-reduced-motion`) · mobil uyumlu
 
 ## Çalıştırma (local)
 
 Kurulum gerekmez — `index.html`'e **çift tıkla**, tarayıcıda açılır (offline).
 
-Ya da basit bir sunucuyla (PWA/bildirim gibi bazı özellikler `file://` yerine `http` ister):
+Ya da basit bir sunucuyla (PWA gibi bazı özellikler `file://` yerine `http` ister):
 ```bash
 python3 -m http.server 8000        # → http://localhost:8000
 ```
 
 ## Canlı bildirim kurulumu
 
-Backend yok — özet ekranına ulaşılınca tarayıcı doğrudan servislere gönderir. `js/config.js` içindeki `CONFIG.notify`:
+Sırlar kodda değil, **Vercel ortam değişkenlerinde** durur. Özet ekranına ulaşılınca site kendi
+`/api/notify` fonksiyonuna POST atar; fonksiyon (api/notify.js) sırları env'den okuyup servislere
+iletir — tarayıcıya anahtar/topic hiç inmez.
 
-- **ntfy.sh (telefon push):** [ntfy](https://ntfy.sh) uygulamasını kur, `ntfyTopic`'e abone ol.
-- **Web3Forms (e-posta):** [web3forms.com](https://web3forms.com)'dan ücretsiz access key al, `web3formsKey`'e yapıştır. (FormData ile gönderilir — CORS preflight'a takılmaz.)
+Vercel → Project → **Settings → Environment Variables**:
+
+| Değişken | Değer |
+|---|---|
+| `NTFY_TOPIC` | [ntfy](https://ntfy.sh) topic'in (telefonda ntfy uygulamasından aynı topic'e abone ol) |
+| `WEB3FORMS_KEY` | [web3forms.com](https://web3forms.com) ücretsiz access key |
 
 Boş bırakılan kanal atlanır. Bildirim mesajı seçilen tarih/mutfak/içeceği içerir.
+Not: bildirim yalnız Vercel deploy'unda çalışır — local `file://` / `http.server`'da `/api` yoktur, istek sessizce düşer (site etkilenmez).
 
 ## Yayınlama
 
-Statik site — herhangi bir statik host'a konur. Vercel'de production branch `master`'a bağlıdır:
+Statik site + tek bir serverless fonksiyon — Vercel için tasarlandı. Production branch `master`'a bağlıdır:
 ```bash
 npx vercel --prod            # ya da GitHub repo'yu Vercel'e bağla (master → prod)
 ```
@@ -58,6 +65,7 @@ Not: `index.html`'deki `og:image` mutlak URL'i deploy domain'ine göre ayarlanma
 
 ```
 index.html · css/styles.css · manifest.webmanifest · sw.js
+api/notify.js     # serverless bildirim köprüsü (sırlar Vercel env'de)
 assets/           # og.png (1200x630) + icon-192/512.png
 js/
   config.js                       # sabitler, mesajlar, bildirim ayarları

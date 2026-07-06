@@ -31,16 +31,13 @@
   }
 
   /* ---------------------------------------------------------------------------
-     CANLI BİLDİRİM — randevu oluşunca (özet ekranı) senin tarayıcına haber uçar.
-     Backend yok; onun tarayıcısı doğrudan ücretsiz servislere POST atar.
-       • ntfy.sh   → telefonuna anında PUSH (ntfy uygulamasını kur, aşağıdaki topic'e abone ol)
-       • Web3Forms → e-posta (web3forms.com'dan ücretsiz access key al, adresini gizler)
-     Boş bırakılan kanal otomatik atlanır (sadece dolu olan(lar) çalışır).
+     CANLI BİLDİRİM — randevu oluşunca (özet ekranı) sana haber uçar.
+     Sırlar (ntfy topic + Web3Forms key) BU DOSYADA DEĞİL — Vercel ortam
+     değişkenlerinde durur (NTFY_TOPIC, WEB3FORMS_KEY) ve yalnız api/notify.js
+     (serverless) okur. Tarayıcı sadece kendi domain'ine (/api/notify) POST atar.
      --------------------------------------------------------------------------- */
   var NOTIFY = {
-    toName: "Aslı",                          // mesajda görünür (kime soruldu)
-    ntfyTopic: "randevu-asli-8fk2p7q",       // ntfy.sh topic — TELEFONDA BUNA ABONE OL (istersen değiştir)
-    web3formsKey: "302b1f4f-f1e8-4c83-bbeb-67d34260d325"  // web3forms.com access key (client-safe; boşsa e-posta atlanır)
+    toName: ""                               // koda isim yazma; ?to= parametresinden gelir
   };
 
   window.CONFIG = {

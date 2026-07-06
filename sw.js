@@ -1,6 +1,6 @@
 /* sw.js — Service Worker: uygulama kabuğunu önbelleğe alır (offline + "ana ekrana ekle").
    Cache-first strateji. Yalnız HTTPS/localhost'ta çalışır (file:// zaten offline). */
-var CACHE = "randevu-v1";
+var CACHE = "randevu-v2";
 var ASSETS = [
   "./", "index.html", "css/styles.css",
   "js/config.js", "js/state.js", "js/dom.js", "js/personalize.js", "js/toast.js",

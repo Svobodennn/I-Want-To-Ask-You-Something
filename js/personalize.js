@@ -1,5 +1,5 @@
 /* personalize.js — window.Personalize: siteyi ?to= URL parametresiyle kişiselleştirir.
-   Örn: ...?to=Elif  →  başlık "Elif, benimle date'e çıkar mısın?" + bildirim "Elif ...".
+   Örn: ...?to=Elif  →  başlık "Elif, benimle çıkar mısın?" + bildirim "Elif ...".
    SRP: kişiselleştirme (isim enjeksiyonu). Bağımlılıklar: DOM, CONFIG.notify. XSS-güvenli (textContent). */
 (function () {
   "use strict";
@@ -21,7 +21,8 @@
     var to = clean(param("to"));
     if (to) {
       var nameEl = window.DOM ? DOM.$("ask-name") : document.getElementById("ask-name");
-      if (nameEl) nameEl.textContent = to;
+      // Varsayılan span "Benimle"; isim gelince "Elif, benimle" olur (textContent → XSS güvenli)
+      if (nameEl) nameEl.textContent = to + ", benimle";
       // bildirim mesajında da bu isim görünsün
       if (window.CONFIG && CONFIG.notify) CONFIG.notify.toName = to;
     }
